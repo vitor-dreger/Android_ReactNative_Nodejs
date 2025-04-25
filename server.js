@@ -1,70 +1,40 @@
-// carregando as variaveis do ambiente .env
-require("dotenv").config();
+// =====================
+// CONFIGURAÇÕES INICIAIS
+// =====================
+require("dotenv").config(); // Carrega variáveis do .env
 
-//importa os pacotes necessarios
 const express = require("express");
 const cors = require("cors");
-const { Sequelize } = require("sequelize");
-const axios = require("axios");
+const sequelize = require("./sequelize"); // Conexão com o banco
 
-//inicia o app
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// conexão com o banco MySql usando Sequelize
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-    host: "localhost",
-    dialect: "mysql",
-});
+// =====================
+// ROTAS
+// =====================
+const livroRoutes = require("./routes/livroRoutes");
+const usuarioRoutes = require("./routes/usuarioRoutes");
 
-// Teste de conexão com o banco
-sequelize.authenticate()
-    .then(() => console.log("Conexão com o MySQL estabelecida com sucesso."))
-    .catch((err) => console.error("Não foi possível conectar ao MySQL:", err));
+app.use("/livros", livroRoutes);     // Ex: GET /livros/buscar-livros
+app.use("/usuarios", usuarioRoutes); // Ex: POST /usuarios/cadastrar-usuario
 
-// =======================
-// ROTA: /buscar-livros - API do Google Books
-// =======================
+// =====================
+// INICIA O SERVIDOR
+// =====================
+const startServer = async () => {
+  try {
+    await sequelize.sync({ alter: true }); // Atualiza as tabelas conforme os modelos
+    console.log("Conexão com o MySQL estabelecida com sucesso.");
 
+    app.listen(5000, () => {
+      console.log("Servidor rodando na porta 5000");
+    });
 
-app.get("/buscar-livros", async (req, res) => {
-    const { titulo } = req.query;
-    
-//verifica se o titulo foi enviado na URL
-    if (!titulo) {
-        return res.status(400).json({ erro: "Informe um título para a busca" });
-    }
-    
-    try {
-        //req à API
-        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${titulo}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
-        
-        //filtra e "simplifica" os dados recebidos da API somente com o que nos queremos
-        const livrosSimplificados = response.data.items.map(item => {
-            const info = item.volumeInfo;
+  } catch (err) {
+    console.error("Não foi possível conectar ao MySQL:", err);
+  }
+};
 
-            return {
-                titulo: info.title,
-                autores: info.authors,
-                descricao: info.description,
-                imagem: info.imageLinks?.thumbnail,
-                link: info.previewLink,
-                editora: info.publisher,
-                categorias: info.categories
-            };
-        });
-        
-        //envia os dados simplificados como resposta.
-        res.json(livrosSimplificados);
-
-    } catch (error) {
-        console.error("Erro ao buscar livros:", error);
-        res.status(500).json({ erro: "Erro ao buscar livros" });
-    }
-});
-
-//inicia o server na porta 5000
-app.listen(5000, () => {
-    console.log("Servidor rodando na porta 5000");
-});
+startServer();
