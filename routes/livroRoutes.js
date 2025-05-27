@@ -1,23 +1,21 @@
-const express = require('express');
-const axios = require('axios');
-const router = express.Router(); // Cria o router para as rotas
+const express = require("express");
+const axios = require("axios");
+const authMiddleware = require("../middlewares/authMiddleware"); // Middleware para autenticação
+const Livro = require("../models/Livro"); // Modelo do Sequelize
+const router = express.Router();
 
 // =======================
 // ROTA: /buscar-livros - API do Google Books
 // =======================
-router.get("/buscar-livros", async (req, res) => {
+router.get("/buscar-livros", authMiddleware, async (req, res) => {
     const { titulo } = req.query;
 
-    // Verifica se o titulo foi enviado na URL
     if (!titulo) {
         return res.status(400).json({ erro: "Informe um título para a busca" });
     }
 
     try {
-        // Requisição à API
         const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${titulo}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
-
-        // Filtra e "simplifica" os dados recebidos da API
         const livrosSimplificados = response.data.items.map(item => {
             const info = item.volumeInfo;
 
@@ -28,17 +26,42 @@ router.get("/buscar-livros", async (req, res) => {
                 imagem: info.imageLinks?.thumbnail,
                 link: info.previewLink,
                 editora: info.publisher,
-                categorias: info.categories
+                categorias: info.categories,
             };
         });
 
-        // Envia os dados simplificados como resposta
         res.json(livrosSimplificados);
-
     } catch (error) {
         console.error("Erro ao buscar livros:", error);
         res.status(500).json({ erro: "Erro ao buscar livros" });
     }
 });
 
-module.exports = router; // Exporta o router
+// =======================
+// ROTA: /cadastrar - Cadastro de Livros
+// =======================
+router.post("/cadastrar", authMiddleware, async (req, res) => {
+    const { titulo, descricao, autor, imagem, tipo } = req.body;
+
+    if (!titulo || !descricao || !autor || !imagem || !tipo) {
+        return res.status(400).json({ erro: "Todos os campos são obrigatórios" });
+    }
+
+    try {
+        const novoLivro = await Livro.create({
+            titulo,
+            descricao,
+            autor,
+            imagem,
+            tipo,
+            id_usuario: req.user.id, // ID do usuário autenticado
+        });
+
+        res.status(201).json({ mensagem: "Livro cadastrado com sucesso", livro: novoLivro });
+    } catch (error) {
+        console.error("Erro ao cadastrar livro:", error);
+        res.status(500).json({ erro: "Erro interno ao cadastrar o livro" });
+    }
+});
+
+module.exports = router;
