@@ -8,23 +8,23 @@ const Livro = sequelize.define("Livro", {
     },
     descricao: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
     },
     autor: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     imagem: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     tipo: {
-        type: DataTypes.ENUM("doacao", "troca"),
+        type: DataTypes.STRING,
         allowNull: false,
     },
     id_usuario: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true, // Pode ser null para livros da API
     },
 });
 

@@ -17,7 +17,7 @@ app.use(cors());
 
 // Registra as rotas
 app.use("/usuarios", usuarioRoutes); // Rotas de usuário
-app.use("/livros", livroRoutes);     // Rotas de livros
+app.use("/livros", livroRoutes); // Registra as rotas com o prefixo "/livros"
 app.use("/avaliacoes", avaliacaoRoutes); // Registra as rotas com o prefixo "/avaliacoes"
 
 // Inicia o servidor
