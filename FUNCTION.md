@@ -7,23 +7,25 @@ Este projeto é uma API RESTful para gerenciamento de livros e avaliações, int
 ## 🚀 Como rodar
 
 1. **Clone o repositório**
-2. **Configure o arquivo .env** com:
-    
-DB_NAME=nome_do_banco
+2. **Configure o arquivo [.env](http://_vscodecontentref_/1)** com:
+
+    ```
+    DB_NAME=nome_do_banco
     DB_USER=usuario
     DB_PASSWORD=senha
     GOOGLE_BOOKS_API_KEY=sua_api_key
     JWT_SECRET=sua_chave_jwt
+    ```
 
 3. **Instale as dependências**
-    
-bash
+    ```bash
     npm install
+    ```
 
 4. **Inicie o servidor**
-    
-bash
-    node server.js
+    ```bash
+    node [server.js](http://_vscodecontentref_/2)
+    ```
 
 
 ---
@@ -31,29 +33,31 @@ bash
 ## 🔑 Autenticação
 
 - **Cadastro:**  
-  POST /usuarios/cadastrar
-  
-json
+  `POST /usuarios/cadastrar`
+  ```json
   {
     "nome": "Nome",
     "email": "email@exemplo.com",
     "senha": "senha"
   }
+  ```
 
 
 - **Login:**  
-  POST /usuarios/login
+  `POST /usuarios/login`
   
-json
+  ```json
   {
     "email": "email@exemplo.com",
     "senha": "senha"
   }
+  ```
 
   **Resposta:**  
   
-json
+  ```json
   { "token": "JWT_TOKEN" }
+  ```
 
   Use este token no header Authorization: Bearer JWT_TOKEN nas rotas protegidas.
 
@@ -62,17 +66,18 @@ json
 ## 📖 Livros
 
 - **Buscar e salvar livros da API do Google Books:**  
-  POST /livros/salvar-livros
+  `POST /livros/salvar-livros`
   
-json
+  ```json
   { "titulo": "React Native" }
+  ```
 
 
 - **Cadastrar livro manualmente:**  
-  POST /livros/cadastrar  
+  `POST /livros/cadastrar`  
   (protegido, precisa de token)
   
-json
+  ```json
   {
     "titulo": "Livro Manual",
     "descricao": "Descrição",
@@ -80,50 +85,53 @@ json
     "imagem": "http://url-da-imagem.com",
     "tipo": "manual"
   }
+  ```
 
 
 - **Listar livros com paginação e filtros:**  
-  GET /livros/listar  
+  `GET /livros/listar`  
   (protegido, precisa de token)
   - Query params: page, limit, titulo, autor, tipo, meusLivros
   - Exemplo: /livros/listar?page=1&limit=5&titulo=React
 
 - **Listar todos os livros (sem paginação):**  
-  GET /livros/todos
+  `GET /livros/todos`
 
 ---
 
 ## ⭐ Avaliações
 
 - **Cadastrar avaliação:**  
-  POST /avaliacoes/cadastrar  
+  `POST /avaliacoes/cadastrar`  
   (protegido, precisa de token)
   
-json
+  ```json
   {
     "nota": 5,
     "comentario": "Muito bom!",
     "id_livro": 1
   }
+  ```
 
 
 - **Listar avaliações de um livro:**  
-  GET /avaliacoes/:id_livro  
+  `GET /avaliacoes/:id_livro`  
   (protegido, precisa de token)
 
 - **Atualizar avaliação:**  
-  PUT /avaliacoes/atualizar/:id  
+  `PUT /avaliacoes/atualizar/:id`  
   (protegido, precisa de token)
   
-json
+  ```json
   {
     "nota": 4,
     "comentario": "Atualizei meu comentário"
   }
+  ```
 
 
 - **Excluir avaliação:**  
-  DELETE /avaliacoes/excluir/:id  
+  `DELETE /avaliacoes/excluir/:id`  
   (protegido, precisa de token)
 
 ---
