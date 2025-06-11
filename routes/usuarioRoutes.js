@@ -14,6 +14,15 @@ router.post("/cadastrar-usuario", async (req, res) => {
         return res.status(400).json({ erro: "Todos os campos são obrigatórios" });
     }
 
+    // Validação de renda per capita
+    const rendaPerCapita = parseFloat(renda) / parseInt(pessoasMorando, 10);
+    if (rendaPerCapita > 1500) {
+        return res.status(403).json({
+            erro: "Cadastro não aprovado",
+            mensagem: "Nossa proposta é social e prioriza pessoas com renda per capita até R$1500. Seu cadastro não foi aprovado pois sua renda é superior a esse limite."
+        });
+    }
+
     try {
         // Verificar se o email já existe no banco
         const usuarioExistente = await Usuario.findOne({ where: { email } });

@@ -17,10 +17,11 @@ Este projeto é uma API RESTful para gerenciamento de livros e avaliações, int
     JWT_SECRET=sua_chave_jwt
     ```
 
-3. **Instale as dependências**
+3. **Instale as dependências do projeto**
     ```bash
     npm install
     ```
+    > Este comando instala todas as bibliotecas necessárias para rodar o backend, conforme o arquivo `package.json`.
 
 4. **Inicie o servidor**
     ```bash
