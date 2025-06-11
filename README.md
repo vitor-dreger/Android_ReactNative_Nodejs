@@ -1,88 +1,155 @@
-# 📚 LeiaComigo - Backend - Biblioteca Social
+# 📚 Leia Comigo - React Native App
 
-Plataforma social para facilitar o acesso a livros gratuitos ou acessíveis para pessoas com baixa renda. Permite a doação, venda de livros, avaliação, e discussões sobre livros.
+Aplicativo móvel da biblioteca social "Leia Comigo", desenvolvido em React Native para consumir a API backend Node.js.
 
-## 💡 Objetivo do Projeto
+## 🚀 Funcionalidades
 
-A Biblioteca Social tem como objetivo criar uma plataforma onde as pessoas possam doar ou vender livros, além de avaliar e participar de clubes de leitura. Focando em acessibilidade e integração social, o projeto busca dar mais acesso a livros para quem possui baixa renda.
+- **Autenticação JWT**: Login e cadastro de usuários com validação de renda per capita
+- **Biblioteca de Livros**: Listagem com filtros por título, autor, tipo e "meus livros"
+- **Busca Google Books**: Integração com API do Google Books para buscar e salvar livros
+- **Cadastro Manual**: Adicionar livros manualmente à biblioteca
+- **Sistema de Avaliações**: Avaliar livros com estrelas e comentários
+- **Gerenciamento de Reviews**: Editar e excluir suas próprias avaliações
+- **Interface Responsiva**: Design moderno com navegação por abas
 
-## 🚀 Tecnologias Utilizadas - Backend
+## 🛠️ Tecnologias
 
-- Node.js - Servidor backend
-- Express - Framework HTTP
-- MySQL - Banco de dados relacional
-- Sequelize - ORM para MySQL
-- Axios - Requisições HTTP externas (para integrar com a API do Google Books)
-- dotenv - Variáveis de ambiente
-- bcrypt - Criptografia de senhas (ainda a ser implementado)
+- **React Native 0.72.6**
+- **React Navigation 6** (Stack + Bottom Tabs)
+- **Axios** para requisições HTTP
+- **AsyncStorage** para persistência local
+- **Context API** para gerenciamento de estado
+- **JWT** para autenticação
 
-## 📋 Funcionalidades
+## 📱 Estrutura do App
 
-- Cadastro e login de usuários 💻
-- Doação e venda de livros 📚
-- Clube de leitura e discussão ✉️
-- Avaliação de livros ⭐
-- Acessibilidade 🔧
+### Telas de Autenticação
+- **LoginScreen**: Login com email e senha
+- **RegisterScreen**: Cadastro com validação de renda per capita
 
-## 🛠️ Como Rodar o Projeto
+### Telas Principais
+- **HomeScreen**: Lista de livros com filtros e busca
+- **SearchBooksScreen**: Buscar livros na API do Google Books
+- **AddBookScreen**: Cadastrar livros manualmente
+- **BookDetailsScreen**: Detalhes do livro com avaliações
+- **AddReviewScreen**: Avaliar um livro
+- **EditReviewScreen**: Editar avaliação existente
+- **ProfileScreen**: Perfil do usuário e logout
 
-### 1. Clonando o repositório
+### Componentes Reutilizáveis
+- **BookCard**: Card de livro para listagens
+- **RatingStars**: Componente de estrelas para avaliações
+- **LoadingSpinner**: Indicador de carregamento
 
+## 🔧 Configuração
+
+### Pré-requisitos
+- Node.js 16+
+- React Native CLI
+- Android Studio (para Android)
+- Xcode (para iOS)
+
+### Instalação
+
+1. **Clone o repositório**
 ```bash
-git clone https://github.com/SEU_USUARIO/biblioteca-social-backend.git
-cd biblioteca-social-backend
+git clone <repository-url>
+cd leia-comigo-app
 ```
 
-### 2. Instalando as dependências
-
+2. **Instale as dependências**
 ```bash
 npm install
 ```
 
-### 3. Configurando as variáveis de ambiente
+3. **Configure o backend**
+   - Certifique-se de que o backend está rodando em `http://localhost:5000`
+   - Ajuste a URL da API em `src/services/api.js` se necessário
 
-Crie um arquivo `.env` na raiz do projeto e adicione as seguintes variáveis (com seus valores):
-
+4. **Para Android**
 ```bash
-MYSQL_USER=root
-MYSQL_PASSWORD=sua-senha
-MYSQL_DB=biblioteca_social
-GOOGLE_BOOKS_API_KEY=sua-chave-api-do-google-books
+npx react-native run-android
 ```
 
-### 4. Rodando o servidor
-
+5. **Para iOS**
 ```bash
-npm start
+cd ios && pod install && cd ..
+npx react-native run-ios
 ```
 
-O servidor vai rodar em [http://localhost:5000](http://localhost:5000).
+## 📡 Integração com Backend
 
-## 📝 Rotas
+O app consome as seguintes rotas da API:
 
-Aqui estão as rotas disponíveis para a API:
+### Autenticação
+- `POST /usuarios/cadastrar-usuario` - Cadastro
+- `POST /usuarios/login` - Login
 
-- `POST /usuarios/cadastrar` - Cadastrar um novo usuário
-- `POST /usuarios/login` - Realizar o login de um usuário
-- `GET /livros/buscar-livros` - Buscar livros usando a API do Google Books
-- `POST /livros` - Cadastrar um novo livro
-- `GET /livros` - Listar todos os livros cadastrados
-- `POST /avaliar` - Avaliar um livro
-- `GET /avaliacoes/:idLivro` - Buscar avaliações de um livro específico
+### Livros
+- `GET /livros/listar` - Listar com filtros e paginação
+- `POST /livros/cadastrar` - Cadastrar livro manual
+- `POST /livros/salvar-livros` - Buscar e salvar do Google Books
 
-## 🧑‍💻 Como Contribuir
+### Avaliações
+- `GET /avaliacoes/:id_livro` - Listar avaliações
+- `POST /avaliacoes/cadastrar` - Criar avaliação
+- `PUT /avaliacoes/atualizar/:id` - Atualizar avaliação
+- `DELETE /avaliacoes/excluir/:id` - Excluir avaliação
 
-1. Faça um fork deste repositório.
-2. Crie uma branch para a sua funcionalidade (`git checkout -b nome-da-sua-branch`).
-3. Commit suas mudanças (`git commit -am 'Adiciona funcionalidade X'`).
-4. Faça o push para a sua branch (`git push origin nome-da-sua-branch`).
-5. Abra um pull request explicando as alterações.
+## 🔐 Autenticação
 
-## 👥 Autores
+- Token JWT armazenado no AsyncStorage
+- Interceptor Axios adiciona token automaticamente
+- Logout automático em caso de token inválido
+- Validação de renda per capita no cadastro
 
-- Vitor Augusto Santana Dreger (vitor-dreger) - Desenvolvimento backend
-- Thiago Lacerda (Twayff) - Desenvolvimento frontend
+## 🎨 Design
+
+- **Cores principais**: Azul (#2563eb), Verde (#16a34a), Amarelo (#fbbf24)
+- **Tipografia**: Sistema padrão com pesos variados
+- **Componentes**: Cards com sombras, botões arredondados
+- **Navegação**: Bottom tabs com ícones emoji
+- **Estados**: Loading spinners e mensagens de erro/sucesso
+
+## 📱 Navegação
+
+```
+AuthStack (não logado)
+├── LoginScreen
+└── RegisterScreen
+
+MainTabs (logado)
+├── HomeTab
+│   ├── HomeScreen
+│   ├── BookDetailsScreen
+│   ├── AddReviewScreen
+│   └── EditReviewScreen
+├── SearchTab
+│   └── SearchBooksScreen
+├── AddBookTab
+│   └── AddBookScreen
+└── ProfileTab
+    └── ProfileScreen
+```
+
+## 🚀 Como Usar
+
+1. **Cadastre-se** com renda per capita até R$ 1.500
+2. **Faça login** com suas credenciais
+3. **Explore livros** na tela inicial
+4. **Busque novos livros** na API do Google Books
+5. **Cadastre livros** manualmente se desejar
+6. **Avalie livros** que você conhece
+7. **Filtre** por "Meus Livros" para ver apenas os seus
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
 
 ## 📄 Licença
 
-Este projeto é licenciado sob a MIT License.
+Este projeto está sob a licença MIT.
