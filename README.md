@@ -1,19 +1,62 @@
-# 📚 API Leia Comigo - Backend
 
-API RESTful para o projeto **Leia Comigo**, uma plataforma de biblioteca social com foco em acesso gratuito ou acessível a livros, especialmente para pessoas com baixa renda.
+# 📚 Leia Comigo - Biblioteca Social
+
+Projeto completo da biblioteca social **Leia Comigo**, com frontend em React Native e backend em Node.js + MySQL.
 
 ---
 
-## 🚀 Como rodar
+## 🧩 Tecnologias Utilizadas
+
+### 📱 Frontend (React Native)
+- **React Native 0.72.6**
+- **React Navigation 6** (Stack + Bottom Tabs)
+- **Axios** para requisições HTTP
+- **AsyncStorage** para persistência local
+- **Context API** para gerenciamento de estado
+- **JWT** para autenticação
+
+### 🌐 Backend (Node.js)
+- **Node.js**
+- **Express**
+- **Sequelize (ORM)** + **MySQL**
+- **dotenv**
+- **bcrypt** para senhas
+- **jsonwebtoken** para autenticação JWT
+- **Google Books API** para integração externa
+
+---
+
+## 🚀 Funcionalidades
+
+### 👤 Usuários
+- Cadastro e login com autenticação JWT
+- Validação de **renda per capita (≤ R$ 1.500)** no cadastro
+- Logout automático se o token expirar
+
+### 📚 Livros
+- Listagem de livros com filtros (título, autor, tipo, "meus livros")
+- Cadastro manual de livros
+- Integração com a **Google Books API** para busca e salvamento
+- Relacionamento com o usuário que cadastrou
+
+### ⭐ Avaliações
+- Avaliar livros com estrelas e comentários
+- Editar e excluir avaliações próprias
+
+---
+
+## 🛠️ Instalação e Execução
+
+### 🔧 Backend
 
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/leia-comigo-backend.git
+git clone <url-backend>
 cd leia-comigo-backend
 ```
 
-2. **Configure o arquivo `.env`** com suas variáveis:
-```env
+2. **Configure o arquivo `.env`**
+```
 DB_NAME=nome_do_banco
 DB_USER=usuario
 DB_PASSWORD=senha
@@ -31,125 +74,120 @@ npm install
 node server.js
 ```
 
----
+### 📲 Frontend
 
-## 🔑 Autenticação
-
-### Cadastro
-`POST /usuarios/cadastrar`
-```json
-{
-  "nome": "Nome",
-  "email": "email@exemplo.com",
-  "senha": "senha",
-  "renda": 1200,
-  "pessoasNaCasa": 3
-}
-```
-⚠️ Apenas usuários com **renda per capita até R$ 1.500** podem se cadastrar.
-
-### Login
-`POST /usuarios/login`
-```json
-{
-  "email": "email@exemplo.com",
-  "senha": "senha"
-}
+1. **Clone o repositório**
+```bash
+git clone <url-frontend>
+cd leia-comigo-app
 ```
 
-**Resposta**
-```json
-{ "token": "JWT_TOKEN" }
+2. **Instale as dependências**
+```bash
+npm install
 ```
-Use esse token no header das requisições protegidas:
+
+3. **Configure o backend em `src/services/api.js`**
+```js
+const api = axios.create({
+  baseURL: 'http://localhost:5000'
+});
 ```
-Authorization: Bearer JWT_TOKEN
+
+4. **Execute o app**
+- Android:
+```bash
+npx react-native run-android
+```
+- iOS:
+```bash
+cd ios && pod install && cd ..
+npx react-native run-ios
 ```
 
 ---
 
-## 📖 Livros
+## 📡 Rotas da API
 
-### Buscar e salvar da API Google Books
-`POST /livros/salvar-livros`
-```json
-{ "titulo": "React Native" }
+### 🔐 Autenticação
+- `POST /usuarios/cadastrar` → Cadastro
+- `POST /usuarios/login` → Login
+
+### 📚 Livros
+- `GET /livros/listar` → Listar com filtros
+- `GET /livros/todos` → Listar todos
+- `POST /livros/cadastrar` → Cadastrar manualmente
+- `POST /livros/salvar-livros` → Buscar na Google Books
+
+### ⭐ Avaliações
+- `GET /avaliacoes/:id_livro` → Listar por livro
+- `POST /avaliacoes/cadastrar` → Avaliar livro
+- `PUT /avaliacoes/atualizar/:id` → Editar avaliação
+- `DELETE /avaliacoes/excluir/:id` → Excluir avaliação
+
+> ⚠️ Todas essas rotas (exceto login e cadastro) requerem envio do token JWT no cabeçalho:
 ```
-
-### Cadastrar manualmente
-`POST /livros/cadastrar` *(protegido)*
-```json
-{
-  "titulo": "Livro Manual",
-  "descricao": "Descrição",
-  "autor": "Autor",
-  "imagem": "http://url-da-imagem.com",
-  "tipo": "manual"
-}
-```
-
-### Listar livros
-`GET /livros/listar` *(protegido)*  
-Query params: `page`, `limit`, `titulo`, `autor`, `tipo`, `meusLivros`
-
-Exemplo:
-```
-/livros/listar?page=1&limit=5&titulo=React
+Authorization: Bearer SEU_TOKEN_JWT
 ```
 
 ---
 
-## ⭐ Avaliações
+## 📱 Estrutura do App (React Native)
 
-### Criar avaliação
-`POST /avaliacoes/cadastrar` *(protegido)*
-```json
-{
-  "nota": 5,
-  "comentario": "Muito bom!",
-  "id_livro": 1
-}
+```
+AuthStack (não logado)
+├── LoginScreen
+└── RegisterScreen
+
+MainTabs (logado)
+├── HomeTab
+│   ├── HomeScreen
+│   ├── BookDetailsScreen
+│   ├── AddReviewScreen
+│   └── EditReviewScreen
+├── SearchTab
+│   └── SearchBooksScreen
+├── AddBookTab
+│   └── AddBookScreen
+└── ProfileTab
+    └── ProfileScreen
 ```
 
-### Listar avaliações
-`GET /avaliacoes/:id_livro` *(protegido)*
-
-### Atualizar avaliação
-`PUT /avaliacoes/atualizar/:id` *(protegido)*
-```json
-{
-  "nota": 4,
-  "comentario": "Atualizei meu comentário"
-}
-```
-
-### Excluir avaliação
-`DELETE /avaliacoes/excluir/:id` *(protegido)*
+### Componentes Reutilizáveis
+- **BookCard** → Card para livros
+- **RatingStars** → Estrelas de avaliação
+- **LoadingSpinner** → Indicador de carregamento
 
 ---
 
-## 📌 Observações
+## 🎨 Design e Navegação
 
-- Sempre envie o token JWT no header Authorization nas rotas protegidas.
-- Use `meusLivros=true` na listagem para filtrar livros cadastrados pelo usuário logado.
-- A renda per capita é validada no cadastro (renda total ÷ número de pessoas ≤ R$ 1500).
+- **Cores principais**: Azul (#2563eb), Verde (#16a34a), Amarelo (#fbbf24)
+- **Componentes com sombras e botões arredondados**
+- **Bottom tabs com ícones emoji**
+- **Mensagens de erro e sucesso integradas**
 
 ---
 
-## 📱 Integração futura com frontend
+## ✅ Como Usar
 
-A API será consumida por um aplicativo **React Native** que incluirá:
-- Login e cadastro com autenticação JWT
-- Listagem de livros com filtros
-- Busca pela API do Google Books
-- Cadastro manual de livros
-- Avaliação de livros (criar, editar, excluir)
-- Perfil de usuário
+1. Cadastre-se com renda per capita até R$ 1.500
+2. Faça login com suas credenciais
+3. Explore livros cadastrados ou buscados da Google Books
+4. Avalie livros e veja avaliações de outros usuários
+5. Gerencie seus próprios livros e avaliações
 
-📦 Quando o frontend estiver pronto, essa seção será expandida com instruções detalhadas de integração.
+---
+
+## 🤝 Contribuindo
+
+1. Fork o projeto
+2. Crie uma branch
+3. Commit suas mudanças
+4. Envie um Pull Request
 
 ---
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT.
+Este projeto está licenciado sob os termos da licença MIT.
