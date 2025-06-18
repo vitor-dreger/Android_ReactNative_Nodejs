@@ -3,6 +3,37 @@ const Avaliacao = require("../models/Avaliacao");
 const authMiddleware = require("../middlewares/authMiddleware");
 const router = express.Router();
 
+/**
+ * @swagger
+ * /avaliacoes/cadastrar:
+ *   post:
+ *     summary: Cadastra uma nova avaliação
+ *     description: Cadastra uma avaliação para um livro. Requer autenticação.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nota:
+ *                 type: integer
+ *                 example: 5
+ *               comentario:
+ *                 type: string
+ *                 example: Livro excelente!
+ *               id_livro:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Avaliação cadastrada com sucesso
+ *       400:
+ *         description: Nota e ID do livro são obrigatórios ou nota fora do intervalo
+ *       500:
+ *         description: Erro interno ao cadastrar avaliação
+ */
+
 // Rota para cadastrar uma nova avaliação
 router.post("/cadastrar", authMiddleware, async (req, res) => {
     const { nota, comentario, id_livro } = req.body;
@@ -29,7 +60,27 @@ router.post("/cadastrar", authMiddleware, async (req, res) => {
         res.status(500).json({ erro: "Erro interno ao cadastrar avaliação" });
     }
 });
-
+/**
+ * @swagger
+ * /avaliacoes/{id_livro}:
+ *   get:
+ *     summary: Lista avaliações de um livro
+ *     description: Retorna todas as avaliações de um livro pelo ID. Requer autenticação.
+ *     parameters:
+ *       - in: path
+ *         name: id_livro
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do livro
+ *     responses:
+ *       200:
+ *         description: Lista de avaliações retornada com sucesso
+ *       404:
+ *         description: Nenhuma avaliação encontrada para este livro
+ *       500:
+ *         description: Erro interno ao buscar avaliações
+ */
 // Rota para listar avaliações de um livro
 router.get("/:id_livro", authMiddleware, async (req, res) => {
     try {
@@ -47,7 +98,42 @@ router.get("/:id_livro", authMiddleware, async (req, res) => {
         res.status(500).json({ erro: "Erro interno ao buscar avaliações" });
     }
 });
-
+/**
+ * @swagger
+ * /avaliacoes/atualizar/{id}:
+ *   put:
+ *     summary: Atualiza uma avaliação
+ *     description: Atualiza a nota e/ou comentário de uma avaliação do usuário autenticado.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID da avaliação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nota:
+ *                 type: integer
+ *                 example: 4
+ *               comentario:
+ *                 type: string
+ *                 example: Gostei bastante!
+ *     responses:
+ *       200:
+ *         description: Avaliação atualizada com sucesso
+ *       400:
+ *         description: Nota fora do intervalo permitido
+ *       404:
+ *         description: Avaliação não encontrada ou sem permissão
+ *       500:
+ *         description: Erro interno ao atualizar avaliação
+ */
 // Rota para atualizar uma avaliação
 router.put("/atualizar/:id", authMiddleware, async (req, res) => {
     const { nota, comentario } = req.body;
@@ -76,7 +162,27 @@ router.put("/atualizar/:id", authMiddleware, async (req, res) => {
         res.status(500).json({ erro: "Erro interno ao atualizar avaliação" });
     }
 });
-
+/**
+ * @swagger
+ * /avaliacoes/excluir/{id}:
+ *   delete:
+ *     summary: Exclui uma avaliação
+ *     description: Exclui uma avaliação do usuário autenticado.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID da avaliação
+ *     responses:
+ *       200:
+ *         description: Avaliação excluída com sucesso
+ *       404:
+ *         description: Avaliação não encontrada ou sem permissão
+ *       500:
+ *         description: Erro interno ao excluir avaliação
+ */
 // Rota para excluir uma avaliação
 router.delete("/excluir/:id", authMiddleware, async (req, res) => {
     try {

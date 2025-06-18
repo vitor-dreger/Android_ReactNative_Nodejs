@@ -5,7 +5,44 @@ const Usuario = require("../models/Usuario");
 
 const router = express.Router();
 
-// Rota para cadastrar um novo usuário
+/**
+ * @swagger
+ * /usuarios/cadastrar-usuario:
+ *   post:
+ *     summary: Cadastra um novo usuário
+ *     description: Cria um usuário novo na plataforma, validando renda per capita.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *                 example: João Silva
+ *               email:
+ *                 type: string
+ *                 example: joao@email.com
+ *               senha:
+ *                 type: string
+ *                 example: senha123
+ *               renda:
+ *                 type: number
+ *                 example: 1200
+ *               pessoasMorando:
+ *                 type: integer
+ *                 example: 3
+ *     responses:
+ *       201:
+ *         description: Usuário cadastrado com sucesso
+ *       400:
+ *         description: Dados inválidos ou usuário já existe
+ *       403:
+ *         description: Renda per capita acima do permitido
+ *       500:
+ *         description: Erro interno ao cadastrar o usuário
+ */
 router.post("/cadastrar-usuario", async (req, res) => {
     const { nome, email, senha, renda, pessoasMorando } = req.body; // Dados recebidos do front-end
 
@@ -52,7 +89,37 @@ router.post("/cadastrar-usuario", async (req, res) => {
     }
 });
 
-// Rota para login de usuário
+/**
+ * @swagger
+ * /usuarios/login:
+ *   post:
+ *     summary: Login de usuário
+ *     description: Realiza o login de um usuário e retorna um token JWT.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: joao@email.com
+ *               senha:
+ *                 type: string
+ *                 example: senha123
+ *     responses:
+ *       200:
+ *         description: Login realizado com sucesso
+ *       400:
+ *         description: Email e senha são obrigatórios
+ *       401:
+ *         description: Senha inválida
+ *       404:
+ *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno ao realizar login
+ */
 router.post("/login", async (req, res) => {
     const { email, senha } = req.body;
 
